@@ -15,7 +15,7 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    // معالجة تسجيل الدخول
+    
     public function store(Request $request)
     {
         $credentials = $request->validate([
@@ -25,7 +25,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Check is_active middleware ممكن نديرو هنا أو بالـ middleware الحقيقي
+            
             if (auth()->user()->is_active == false) {
                 auth()->logout();
                 return back()->withErrors([
@@ -41,7 +41,7 @@ class LoginController extends Controller
         ]);
     }
 
-    // Logout
+    
     public function logout(Request $request)
     {
         Auth::logout();
@@ -51,3 +51,5 @@ class LoginController extends Controller
         return redirect('/login');
     }
 }
+
+
