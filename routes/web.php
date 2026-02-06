@@ -20,3 +20,4 @@ Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
 Route::get('/dashboard', function(){
     return "welcome" . auth()->user()->name;
 })->middleware('auth');             
+
