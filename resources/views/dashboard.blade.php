@@ -127,6 +127,34 @@
             </div>
         </div>
 
+        <div class="card" style="margin-bottom: 20px;">
+            <h2>Search & Filter</h2>
+            <form action="{{ route('dashboard') }}" method="GET" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" name="search" placeholder="Search links..." value="{{ request('search') }}" style="flex: 1; padding: 8px;">
+
+                <select name="category_id" style="padding: 8px;">
+                    <option value="">All Categories</option>
+                    @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                    @endforeach
+                </select>
+
+                <select name="tag_id" style="padding: 8px;">
+                    <option value="">All Tags</option>
+                    @foreach($tags as $tag)
+                    <option value="{{ $tag->id }}" {{ request('tag_id') == $tag->id ? 'selected' : '' }}>
+                        {{ $tag->name }}
+                    </option>
+                    @endforeach
+                </select>
+
+                <button type="submit" style="background: #3498db; color: white; border: none; padding: 8px 16px; cursor: pointer;">Search</button>
+                <a href="{{ route('dashboard') }}" style="padding: 8px 16px; text-decoration: none; color: #666; border: 1px solid #ccc; background: #eee;">Clear</a>
+            </form>
+        </div>
+
         <div class="grid">
             <div class="card">
                 <h2>Categories</h2>
