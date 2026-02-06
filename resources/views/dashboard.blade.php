@@ -79,8 +79,6 @@
 
         <h1>Welcome, {{ auth()->user()->name }}!</h1>
 
-        <h1>Welcome, {{ auth()->user()->name }}!</h1>
-
         <div style="margin-bottom: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
 
             <div class="card">
