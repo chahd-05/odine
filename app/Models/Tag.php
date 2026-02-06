@@ -9,9 +9,8 @@ class Tag extends Model
 {
     protected $fillable = ['name'];
 
-    public function link(){
+    public function links()
+    {
         return $this->belongsToMany(Link::class);
     }
 }
-
-
