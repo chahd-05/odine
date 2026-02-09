@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LinkController;
+use App\Http\Controllers\TagController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,9 +21,7 @@ Route::post('/login', [LoginController::class, 'store']);
 
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
 
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\LinkController;
-use App\Http\Controllers\TagController;
+
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
