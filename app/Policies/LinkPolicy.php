@@ -29,15 +29,22 @@ class LinkPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEditor();
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Link $link): bool
+    public function update(User $user, Link $link)
     {
-        return false;
+        if ($user->isAdmin())
+        return true;
+
+            if ($user->isEditor() && $link->user_id == $user->id){
+                return true;
+            }
+
+            return false;
     }
 
     /**
@@ -45,7 +52,7 @@ class LinkPolicy
      */
     public function delete(User $user, Link $link): bool
     {
-        return false;
+        return $this->update($user, $link);
     }
 
     /**
@@ -53,7 +60,7 @@ class LinkPolicy
      */
     public function restore(User $user, Link $link): bool
     {
-        return false;
+        return $this->update($user, $link);
     }
 
     /**
@@ -61,6 +68,6 @@ class LinkPolicy
      */
     public function forceDelete(User $user, Link $link): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 }
