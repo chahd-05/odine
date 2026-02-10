@@ -67,11 +67,18 @@ class User extends Authenticatable
         return $this->hasRole('viewer');
     }
 
-    public function canEdit($ressource){
-        if($this->isAdmin()) return true;
-        if($this->isEditor() && $ressource->user_id == $this->id) return true;
-        return false;
+    public function getAllPermissions(){
+        if($this->isAdmin()){
+            return ['create', 'read', 'update', 'delete', 'manage_user'];
+        }
+        elseif($this->isEditor()){
+            return ['create', 'read', 'update', 'delete'];
+        }
+        else{
+            return ['read'];
+        }
     }
+
 }
 
 
