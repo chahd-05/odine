@@ -3,9 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Role;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -44,6 +45,32 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function roles(){
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole($role){
+        return $this->roles()->where('slug', $role)->exists();
+    }
+
+    public function isAdmin(){
+        return $this->hasRole('admin');
+    }
+
+    public function isEditor(){
+        return $this->hasRole('editor');
+    }
+
+    public function isViewer(){
+        return $this->hasRole('viewer');
+    }
+
+    public function canEdit($ressource){
+        if($this->isAdmin()) return true;
+        if($this->isEditor() && $ressource->user_id == $this->id) return true;
+        return false;
     }
 }
 
