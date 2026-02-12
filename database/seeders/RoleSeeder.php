@@ -2,38 +2,60 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class RoleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $roles = [
-        [
-            'name' => 'Admin',
-            'slug' => 'admin',
-            'description' => 'full access to all features'
-        ],
-        [
-            'name' => 'Editor',
-            'slug' => 'editor',
-            'description' => 'can manage only this own resources'
-        ],
-        [
-            'name' => 'Viewer',
-            'slug' => 'viewer',
-            'description' => 'Read only no modification'
-        ]
-        ];
+        $adminRole = Role::firstOrCreate(
+            ['slug' => 'admin'],
+            ['name' => 'Admin', 'description' => 'Administrator with full access']
+        );
 
-        foreach ($roles as $role){
-            Role::create($role);
-        }
-        $this->command->info('3 roles created successfully');
+        $editorRole = Role::firstOrCreate(
+            ['slug' => 'editor'],
+            ['name' => 'Editor', 'description' => 'Editor can manage own resources']
+        );
+
+        $viewerRole = Role::firstOrCreate(
+            ['slug' => 'viewer'],
+            ['name' => 'Viewer', 'description' => 'Viewer can only read']
+        );
+
+        $admin = User::withTrashed()->updateOrCreate(
+            ['email' => 'admin@odin.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $admin->roles()->syncWithoutDetaching([$adminRole->id]);
+
+        $editor = User::withTrashed()->updateOrCreate(
+            ['email' => 'editor@odin.com'],
+            [
+                'name' => 'Editor User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $editor->roles()->syncWithoutDetaching([$editorRole->id]);
+
+        $viewer = User::withTrashed()->updateOrCreate(
+            ['email' => 'viewer@odin.com'],
+            [
+                'name' => 'Viewer User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $viewer->roles()->syncWithoutDetaching([$viewerRole->id]);
     }
 }
