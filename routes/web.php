@@ -40,4 +40,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/links/{id}/edit', [LinkController::class, 'edit'])->name('links.edit');
     Route::put('/links/{id}', [LinkController::class, 'update'])->name('links.update');
     Route::delete('/links/{id}', [LinkController::class, 'destroy'])->name('links.destroy');
+
+    Route::get('/links/trashed', [LinkController::class, 'trashed'])->name('links.trashed');
+    Route::post('/links/{id}/restore', [LinkController::class, 'restore'])->name('links.restore');
+    Route::delete('/links/{id}/force-delete', [LinkController::class, 'forceDelete'])->name('links.force_delete');
+
+    Route::post('/links/{link}/share', [LinkController::class, 'share'])->name('links.share');
+
+    Route::get('/favorites', [LinkController::class, 'favorites'])->name('links.favorites');
+    Route::post('/links/{id}/favorite', [LinkController::class, 'toggleFavorite'])->name('links.toggle_favorite');
+
+    Route::get('/activity-logs', [\App\Http\Controllers\ActivityLogController::class, 'index'])->name('activity_logs.index');
+
+    Route::resource('users', \App\Http\Controllers\UserController::class)->only(['index', 'update', 'destroy']);
 });
