@@ -3,26 +3,40 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateLinkRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        $link = $this->route('link');
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $linkId = $this->route('id');
+
         return [
-            //
+            'title' => 'required|string|max:255',
+            'url' => [
+                'required',
+                'url',
+                Rule::unique('links')->ignore($linkId)->where(function ($query) {
+                    return $query->where('user_id', Auth::id());
+                }),
+            ],
+            'category_id' => 'required|exists:categories,id',
+            'tags' => 'array',
+            'tags.*' => 'exists:tags,id',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'url.unique' => 'Vous avez déjà enregistré ce lien.',
         ];
     }
 }
