@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Role;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,35 +9,19 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, \Illuminate\Database\Eloquent\SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -47,38 +30,49 @@ class User extends Authenticatable
         ];
     }
 
-    public function roles(){
+    public function roles()
+    {
         return $this->belongsToMany(Role::class);
     }
 
-    public function hasRole($role){
+    public function sharedLinks()
+    {
+        return $this->belongsToMany(Link::class)->withPivot('access_level')->withTimestamps();
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Link::class, 'favorites')->withTimestamps();
+    }
+
+    public function hasRole($role)
+    {
         return $this->roles()->where('slug', $role)->exists();
     }
 
-    public function isAdmin(){
+    public function isAdmin()
+    {
         return $this->hasRole('admin');
     }
 
-    public function isEditor(){
+    public function isEditor()
+    {
         return $this->hasRole('editor');
     }
 
-    public function isViewer(){
+    public function isViewer()
+    {
         return $this->hasRole('viewer');
     }
 
-    public function getAllPermissions(){
-        if($this->isAdmin()){
-            return ['create', 'read', 'update', 'delete', 'manage_user'];
-        }
-        elseif($this->isEditor()){
-            return ['create', 'read', 'update', 'delete'];
-        }
-        else{
+    public function getAllPermissions()
+    {
+        if ($this->isAdmin()) {
+            return ['create', 'read', 'update', 'delete', 'manage_user', 'restore', 'force_delete'];
+        } elseif ($this->isEditor()) {
+            return ['create', 'read', 'update_own', 'delete_own', 'restore_own'];
+        } else {
             return ['read'];
         }
     }
-
 }
-
-
