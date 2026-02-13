@@ -2,35 +2,24 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Models\Link;
+use App\Models\User;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 
 class LinkShared
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
 
-    /**
-     * Create a new event instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public Link $link;
+    public User $sharer;
+    public User $recipient;
+    public string $accessLevel;
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
+    public function __construct(Link $link, User $sharer, User $recipient, string $accessLevel)
     {
-        return [
-            new PrivateChannel('channel-name'),
-        ];
+        $this->link = $link;
+        $this->sharer = $sharer;
+        $this->recipient = $recipient;
+        $this->accessLevel = $accessLevel;
     }
 }
