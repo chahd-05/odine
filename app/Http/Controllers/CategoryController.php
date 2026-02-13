@@ -10,6 +10,7 @@ class CategoryController extends Controller
 {
     public function store(Request $request)
     {
+        $this->authorize('create', Category::class);
         $request->validate(['name' => 'required|string|max:255']);
 
         Category::create([
@@ -23,6 +24,7 @@ class CategoryController extends Controller
     public function edit($id)
     {
         $category = Category::findOrFail($id);
+        $this->authorize('update', $category);
         return view('categories.edit', compact('category'));
     }
 
@@ -31,6 +33,7 @@ class CategoryController extends Controller
         $request->validate(['name' => 'required|string|max:255']);
 
         $category = Category::findOrFail($id);
+        $this->authorize('update', $category);
         $category->update(['name' => $request->name]);
 
         return redirect()->route('dashboard');
@@ -39,6 +42,7 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
+        $this->authorize('delete', $category);
         $category->delete();
 
         return redirect()->route('dashboard');
