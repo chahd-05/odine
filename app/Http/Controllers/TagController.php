@@ -9,6 +9,7 @@ class TagController extends Controller
 {
     public function store(Request $request)
     {
+        $this->authorize('create', Tag::class);
         $request->validate(['name' => 'required|string|max:255']);
 
         Tag::create(['name' => $request->name]);
@@ -19,6 +20,7 @@ class TagController extends Controller
     public function edit($id)
     {
         $tag = Tag::findOrFail($id);
+        $this->authorize('update', $tag);
         return view('tags.edit', compact('tag'));
     }
 
@@ -27,6 +29,7 @@ class TagController extends Controller
         $request->validate(['name' => 'required|string|max:255']);
 
         $tag = Tag::findOrFail($id);
+        $this->authorize('update', $tag);
         $tag->update(['name' => $request->name]);
 
         return redirect()->route('dashboard');
@@ -35,6 +38,7 @@ class TagController extends Controller
     public function destroy($id)
     {
         $tag = Tag::findOrFail($id);
+        $this->authorize('delete', $tag);
         $tag->delete();
 
         return redirect()->route('dashboard');
