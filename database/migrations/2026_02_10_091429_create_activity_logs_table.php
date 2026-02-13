@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('activiy_logs', function (Blueprint $table) {
+        Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('action'); // create, update, delete
+            $table->text('description'); // e.g. "Hamza a modifié le lien..."
+            $table->string('subject_type')->nullable(); // App\Models\Link
+            $table->unsignedBigInteger('subject_id')->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('activiy_logs');
+        Schema::dropIfExists('activity_logs');
     }
 };
