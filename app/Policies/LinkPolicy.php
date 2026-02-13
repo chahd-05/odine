@@ -8,64 +8,49 @@ use Illuminate\Auth\Access\Response;
 
 class LinkPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEditor() || $user->isViewer();
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Link $link): bool
     {
-        return false;
+        return $user->isAdmin()
+            || $user->id === $link->user_id
+            || $link->users()->where('user_id', $user->id)->exists();
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
         return $user->isAdmin() || $user->isEditor();
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
     public function update(User $user, Link $link)
     {
-        if ($user->isAdmin())
-        return true;
+        if ($user->isAdmin()) {
+            return true;
+        }
 
-            if ($user->isEditor() && $link->user_id == $user->id){
-                return true;
-            }
+        if ($user->id === $link->user_id) {
+            return true;
+        }
 
-            return false;
+        return $link->users()
+            ->where('user_id', $user->id)
+            ->where('access_level', 'edit')
+            ->exists();
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, Link $link): bool
     {
         return $this->update($user, $link);
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
     public function restore(User $user, Link $link): bool
     {
         return $this->update($user, $link);
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
     public function forceDelete(User $user, Link $link): bool
     {
         return $user->isAdmin();
