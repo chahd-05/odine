@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Category;
 use App\Models\Link;
 use App\Models\Tag;
@@ -11,14 +10,20 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index(Request $request)
     {
+        $user = Auth::user();
         $query = Link::query();
+
+        // Permission: Admin voit tout, Editor/Viewer voient seulement leurs liens + partagés
+        if (!$user->isAdmin()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhereHas('users', function ($sub) use ($user) {
+                        $sub->where('user_id', $user->id);
+                    });
+            });
+        }
 
         // Search by title or URL
         if ($request->filled('search')) {
@@ -42,10 +47,13 @@ class DashboardController extends Controller
         }
 
         $links = $query->with(['category', 'tags'])->get();
-
         $categories = Category::all();
         $tags = Tag::all();
+        $notifications = $user->unreadNotifications;
 
-        return view('dashboard', compact('categories', 'links', 'tags'));
+        // Charger les IDs des favoris pour éviter N+1
+        $favoriteIds = $user->favorites()->pluck('links.id')->toArray();
+
+        return view('dashboard', compact('categories', 'links', 'tags', 'notifications', 'favoriteIds'));
     }
 }
