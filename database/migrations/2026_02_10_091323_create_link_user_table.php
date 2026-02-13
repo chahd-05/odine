@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('link_user', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('link_id')->constrained()->cascadeOnDelete();
+            $table->enum('access_level', ['read', 'edit'])->default('read');
+            $table->unique(['user_id', 'link_id']);
             $table->timestamps();
         });
     }
