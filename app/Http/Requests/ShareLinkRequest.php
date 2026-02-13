@@ -6,23 +6,27 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ShareLinkRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'email'        => 'required|email|exists:users,email',
+            'access_level' => 'required|in:read,edit',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.required'        => 'L\'adresse email est obligatoire.',
+            'email.email'           => 'L\'adresse email doit être valide.',
+            'email.exists'          => 'Aucun utilisateur trouvé avec cet email.',
+            'access_level.required' => 'Le niveau d\'accès est obligatoire.',
+            'access_level.in'       => 'Le niveau d\'accès doit être "read" ou "edit".',
         ];
     }
 }
